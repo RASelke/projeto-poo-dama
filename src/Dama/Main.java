@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) {
         Tabuleiro tabuleiro = new Tabuleiro(8,8);
-        new Pedra(null, new Posicao(7,6), Cor.BRANCO);
+        new Pedra(tabuleiro, new Posicao(0,0), Cor.BRANCO);
 
         Main.imprimirTabuleiro(tabuleiro);
     }

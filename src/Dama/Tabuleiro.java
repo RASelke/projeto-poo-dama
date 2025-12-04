@@ -11,15 +11,6 @@ public class Tabuleiro {
         this.coluna = coluna;
         this.matriz = new Peca[this.linha][this.coluna];
     }
-    
-
-    public void colocarPeca(Peca peca, Posicao posicao) {
-        int linhaPosicao = posicao.getLinha();
-        int colunaPosicao = posicao.getColuna();
-
-        this.matriz[linhaPosicao][colunaPosicao] = peca;
-    }
-
 
     // Getters
     public int getLinha() {
@@ -31,6 +22,18 @@ public class Tabuleiro {
 
     public Peca getPeca (int linha, int coluna) {
         return matriz[linha][coluna];
+    }
+
+
+    public void colocarPeca(Peca peca, Posicao posicao) {
+        int linhaPosicao = posicao.getLinha();
+        int colunaPosicao = posicao.getColuna();
+
+        this.matriz[linhaPosicao][colunaPosicao] = peca;
+    }
+
+    public void moverPeca(Posicao origem, Posicao destino) {
+        
     }
 
 }
