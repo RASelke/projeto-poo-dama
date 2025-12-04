@@ -1,6 +1,6 @@
 package modelo;
 
-public abstract class Peca {
+public class Peca {
     private Cor cor;
     private boolean isDama;
 
@@ -15,6 +15,13 @@ public abstract class Peca {
     
     public void virarDama() { this.isDama = true; }
 
-    // Método abstrato: Força as classes filhas a implementarem sua própria regra
-    public abstract boolean movimentoValido(int linhaOrigem, int colOrigem, int linhaDestino, int colDestino);
+    // Verifica apenas se o movimento é diagonal geometricamente
+    public boolean movimentoValido(int l1, int c1, int l2, int c2) {
+        int deltaL = Math.abs(l1 - l2);
+        int deltaC = Math.abs(c1 - c2);
+        
+        // Regra básica: deve andar na diagonal (mudança em L igual a mudança em C)
+        // e deve ter movido pelo menos uma casa.
+        return deltaL == deltaC && deltaL > 0;
+    }
 }
