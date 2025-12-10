@@ -22,7 +22,7 @@ public class JogoDamasGUI extends JFrame {
         setTitle("Jogo de Damas - Projeto POO");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza na tela
+        setLocationRelativeTo(null);
         
         painelTabuleiro = new JPanel(new GridLayout(8, 8));
         inicializarInterface();
@@ -38,9 +38,9 @@ public class JogoDamasGUI extends JFrame {
                 btn.setOpaque(true);
                 btn.setBorderPainted(false);
                 
-                // Cores do Tabuleiro
-                if ((i + j) % 2 == 0) btn.setBackground(new Color(240, 230, 140)); // Bege claro
-                else btn.setBackground(new Color(101, 67, 33)); // Marrom escuro
+                // Cores clássicas do tabuleiro
+                if ((i + j) % 2 == 0) btn.setBackground(new Color(245, 222, 179)); // Bege
+                else btn.setBackground(new Color(139, 69, 19)); // Marrom
 
                 final int r = i;
                 final int c = j;
@@ -61,17 +61,16 @@ public class JogoDamasGUI extends JFrame {
                 linhaOrigem = linha;
                 colOrigem = col;
                 primeiraSelecao = false;
-                botoes[linha][col].setBackground(Color.YELLOW); // Highlight na seleção
+                botoes[linha][col].setBackground(Color.YELLOW);
             }
         } else {
             // Tenta mover
             boolean sucesso = tabuleiro.tentarMover(linhaOrigem, colOrigem, linha, col);
             
-            // Reseta cores
             recolorirTabuleiro();
             
             if (!sucesso) {
-                // Se clicou na própria peça de novo, cancela seleção. Se clicou errado, avisa.
+                // Se clicou num lugar diferente da origem e deu erro, avisa
                 if(linha != linhaOrigem || col != colOrigem) {
                     JOptionPane.showMessageDialog(this, "Movimento Inválido!");
                 }
@@ -87,8 +86,8 @@ public class JogoDamasGUI extends JFrame {
     private void recolorirTabuleiro() {
          for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) botoes[i][j].setBackground(new Color(240, 230, 140));
-                else botoes[i][j].setBackground(new Color(101, 67, 33));
+                if ((i + j) % 2 == 0) botoes[i][j].setBackground(new Color(245, 222, 179));
+                else botoes[i][j].setBackground(new Color(139, 69, 19));
             }
          }
     }
@@ -98,9 +97,8 @@ public class JogoDamasGUI extends JFrame {
             for (int j = 0; j < 8; j++) {
                 Peca p = tabuleiro.getPeca(i, j);
                 if (p != null) {
-                    // Renderização visual da peça
-                    String simbolo = p.isDama() ? "♛" : "●"; 
-                    botoes[i][j].setText(simbolo);
+                    // Polimorfismo: Cada peça sabe seu símbolo
+                    botoes[i][j].setText(p.getSimbolo());
                     
                     if (p.getCor() == Cor.BRANCA) {
                         botoes[i][j].setForeground(Color.WHITE);
@@ -113,8 +111,7 @@ public class JogoDamasGUI extends JFrame {
                 }
             }
         }
-        // Atualiza título com a vez
-        setTitle("Damas - Vez: " + tabuleiro.getVezAtual());
+        setTitle("Damas POO - Vez: " + tabuleiro.getVezAtual());
     }
 
     public static void main(String[] args) {
