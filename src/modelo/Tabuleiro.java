@@ -39,8 +39,8 @@ public class Tabuleiro {
         // 1. Validações Básicas
         if (p == null) return false;
         if (p.getCor() != vezAtual) return false;
-        if (pecas[l2][c2] != null) return false; // Destino ocupado
-        if (l1 == l2 || c1 == c2) return false; 
+        if (pecas[l2][c2] != null) return false;
+        if (l1 == l2 || c1 == c2) return false;
 
         if (emSequenciaCaptura) {
             if (l1 != linhaFocada || c1 != colFocada) return false;
@@ -56,11 +56,10 @@ public class Tabuleiro {
         int sentidoLinha = (l2 - l1) / deltaL; 
         
         if (!p.isMovimentoBasicoValido(deltaL, deltaC, sentidoLinha)) {
-             return false;
+            return false;
         }
 
         // 3. Validação de Rota (Delegado para a classe Rota)
-        // Passamos 'this' para que a Rota possa ler este tabuleiro
         Rota rota = Rota.analisar(this, l1, c1, l2, c2, p);
         
         // Acesso via Getters (Encapsulamento)

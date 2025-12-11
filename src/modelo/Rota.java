@@ -30,12 +30,12 @@ public class Rota {
         Rota r = new Rota();
         int deltaL = Math.abs(l2 - l1);
         
-        if (deltaL == 0) return r; 
+        if (deltaL == 0) return r;
 
         int dirL = (l2 - l1) / deltaL;
         int dirC = (c2 - c1) / Math.abs(c2 - c1);
 
-        // Polimorfismo: Verifica tipos específicos
+        
         if (p instanceof PecaComum) {
             if (deltaL == 1) { 
                 r.valida = true;
