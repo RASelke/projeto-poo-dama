@@ -40,8 +40,6 @@ public class Tabuleiro {
         if (p == null) return false;
         if (p.getCor() != vezAtual) return false;
         if (pecas[l2][c2] != null) return false; // Destino ocupado
-
-        // CORREÇÃO DO BUG: Impede divisão por zero em movimentos retos (lado ou vertical)
         if (l1 == l2 || c1 == c2) return false; 
 
         if (emSequenciaCaptura) {
@@ -131,8 +129,7 @@ public class Tabuleiro {
                     r.cCaptura = cMeio;
                 }
             }
-        } 
-        else if (p instanceof Dama) {
+        } else if (p instanceof Dama) {
             int pecasNoCaminho = 0;
             int lAux = l1 + dirL;
             int cAux = c1 + dirC;
