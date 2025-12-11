@@ -11,7 +11,7 @@ public class Tabuleiro {
 
     public Tabuleiro() {
         pecas = new Peca[TAMANHO][TAMANHO];
-        vezAtual = Cor.VERMELHA;
+        vezAtual = Cor.VERMELHA; // ou a cor que começa
         inicializarTabuleiro();
     }
 
@@ -46,25 +46,31 @@ public class Tabuleiro {
             if (l1 != linhaFocada || c1 != colFocada) return false;
         }
 
-        // 2. Validação Geométrica (Polimorfismo)
+        // 2. Validação Geométrica (Polimorfismo na Peça)
         int deltaL = Math.abs(l2 - l1);
         int deltaC = Math.abs(c2 - c1);
-        int sentidoLinha = (l2 - l1) / deltaL; // Agora seguro pois deltaL nunca será 0
         
-        // Pergunta para a instância (Dama ou Comum) se ela aceita esse movimento
+        // Proteção contra divisão por zero caso o movimento não seja diagonal
+        if (deltaL == 0) return false;
+        
+        int sentidoLinha = (l2 - l1) / deltaL; 
+        
         if (!p.isMovimentoBasicoValido(deltaL, deltaC, sentidoLinha)) {
              return false;
         }
 
-        // 3. Validação de Rota (Colisões)
-        Rota rota = analisarRota(l1, c1, l2, c2, p);
-        if (!rota.valida) return false;
+        // 3. Validação de Rota (Delegado para a classe Rota)
+        // Passamos 'this' para que a Rota possa ler este tabuleiro
+        Rota rota = Rota.analisar(this, l1, c1, l2, c2, p);
+        
+        // Acesso via Getters (Encapsulamento)
+        if (!rota.isValida()) return false;
 
         // 4. Execução do Movimento
-        if (rota.captura) {
+        if (rota.isCaptura()) {
             pecas[l2][c2] = p;
             pecas[l1][c1] = null;
-            pecas[rota.lCaptura][rota.cCaptura] = null; // Remove peça comida
+            pecas[rota.getLCaptura()][rota.getCCaptura()] = null; // Remove peça comida
 
             // Verifica Combo
             if (podeCapturarNovamente(l2, c2, p)) {
@@ -91,7 +97,7 @@ public class Tabuleiro {
         linhaFocada = -1;
         colFocada = -1;
         
-        // Verifica Promoção (Transforma Comum em Dama)
+        // Verifica Promoção
         if (p instanceof PecaComum) {
             if ((p.getCor() == Cor.VERMELHA && l == 0) || 
                 (p.getCor() == Cor.BRANCA && l == 7)) {
@@ -102,57 +108,6 @@ public class Tabuleiro {
         vezAtual = (vezAtual == Cor.VERMELHA) ? Cor.BRANCA : Cor.VERMELHA;
     }
 
-    // Estrutura auxiliar interna
-    private class Rota {
-        boolean valida = false;
-        boolean captura = false;
-        int lCaptura, cCaptura;
-    }
-
-    private Rota analisarRota(int l1, int c1, int l2, int c2, Peca p) {
-        Rota r = new Rota();
-        int deltaL = Math.abs(l2 - l1);
-        int dirL = (l2 - l1) / deltaL;
-        int dirC = (c2 - c1) / Math.abs(c2 - c1);
-
-        if (p instanceof PecaComum) {
-            if (deltaL == 1) { 
-                r.valida = true;
-            } else if (deltaL == 2) {
-                int lMeio = l1 + dirL;
-                int cMeio = c1 + dirC;
-                Peca alvo = pecas[lMeio][cMeio];
-                if (alvo != null && alvo.getCor() != p.getCor()) {
-                    r.valida = true;
-                    r.captura = true;
-                    r.lCaptura = lMeio;
-                    r.cCaptura = cMeio;
-                }
-            }
-        } else if (p instanceof Dama) {
-            int pecasNoCaminho = 0;
-            int lAux = l1 + dirL;
-            int cAux = c1 + dirC;
-
-            while (lAux != l2) {
-                Peca obstaculo = pecas[lAux][cAux];
-                if (obstaculo != null) {
-                    if (obstaculo.getCor() == p.getCor()) return r; // Bloqueio amigo
-                    if (pecasNoCaminho > 0) return r; // Mais de uma peça
-                    
-                    r.captura = true;
-                    r.lCaptura = lAux;
-                    r.cCaptura = cAux;
-                    pecasNoCaminho++;
-                }
-                lAux += dirL;
-                cAux += dirC;
-            }
-            r.valida = true;
-        }
-        return r;
-    }
-
     private boolean podeCapturarNovamente(int l, int c, Peca p) {
         int[] d = {-1, 1};
         for (int i : d) {
@@ -161,10 +116,10 @@ public class Tabuleiro {
                 int destC = c + (j * 2);
                 
                 if (dentroDoTabuleiro(destL, destC) && pecas[destL][destC] == null) {
-                    // Reutiliza validação polimórfica para saber se a peça "sabe" capturar assim
                     if (p.isMovimentoBasicoValido(2, 2, i)) {
-                        Rota r = analisarRota(l, c, destL, destC, p);
-                        if (r.valida && r.captura) return true;
+                        // Chama a classe Rota externa novamente
+                        Rota r = Rota.analisar(this, l, c, destL, destC, p);
+                        if (r.isValida() && r.isCaptura()) return true;
                     }
                 }
             }
